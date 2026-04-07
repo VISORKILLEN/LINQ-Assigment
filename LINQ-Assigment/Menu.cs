@@ -3,11 +3,11 @@
     internal class Menu
     {
 
-        public static void ShowMenu()
+        public void ShowMenu()
         {
             Console.WriteLine("Välkommen till Admin för Online Store!");
 
-            var menu = new Services();
+            var service = new Services();
 
             bool running = true;
 
@@ -23,26 +23,27 @@
                 Console.WriteLine("0. Avsluta program");
 
                 var choice = Console.ReadLine();
+                Console.Clear();
 
                 switch (choice)
                 {
                     case "1":
-                        menu.GetElectronicsProducts();
+                        service.GetElectronicsProducts();
                         break;
                     case "2":
-                        menu.GetSuppliersLowStock();
+                        service.GetSuppliersLowStock();
                         break;
                     case "3":
-                        menu.GetTotalLastMonth();
+                        service.GetTotalLastMonth();
                         break;
                     case "4":
-                        menu.GetTopProducts();
+                        service.GetTopProducts();
                         break;
                     case "5":
-                        menu.GetProductsPerCategory();
+                        service.GetProductsPerCategory();
                         break;
                     case "6":
-                        menu.GetOrdersOver1000();
+                        service.GetOrdersOver1000();
                         break;
                     case "0":
                         running = false;
@@ -55,6 +56,7 @@
 
                 Console.WriteLine("\n Tryck på valfri tanget");
                 Console.ReadKey();
+                Console.Clear();
 
             }
         }

@@ -114,9 +114,9 @@ namespace LINQ_Assigment
 
             foreach (var o in orders)
             {
-                Console.WriteLine($", Kund: {o.Customer.Name}\n" +
+                Console.WriteLine($"Kund: {o.Customer.Name}\n" +
                     $" Datum: {o.OrderDate}\n" +
-                    $", Total summa: {o.TotalAmount} kr");
+                    $"Total summa: {o.TotalAmount} kr");
 
                 foreach (var od in o.OrderDetails)
                 {
