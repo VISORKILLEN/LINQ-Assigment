@@ -20,7 +20,7 @@ namespace LINQ_Assigment
             foreach (var p in products)
             {
                 Console.WriteLine($"{p.Name} - {p.Price} kr");
-            } 
+            }
         }
 
         //get suppliers with products  under 10 in stock
@@ -44,10 +44,12 @@ namespace LINQ_Assigment
         {
             using var context = new OnlineStoreContext();
 
-            var lastMonth = DateTime.Now.AddMonths(-1);
+            var today = DateTime.Now;
+            var firstDayThisMonth = new DateTime(today.Year, today.Month, 1);
+            var firstDayLastMonth = firstDayThisMonth.AddMonths(-1);
 
             var total = context.Orders
-                .Where(o => o.OrderDate >= lastMonth)
+                .Where(o => o.OrderDate >= firstDayLastMonth && o.OrderDate < firstDayThisMonth)
                 .Sum(o => o.TotalAmount);
 
             Console.WriteLine($"Totalt ordervärde föregående månad:{total} kr");
@@ -56,8 +58,71 @@ namespace LINQ_Assigment
         //Three best sold products.
         public void GetTopProducts()
         {
+            using var context = new OnlineStoreContext();
 
+            var topProducts = context.OrderDetails
+                .Include(od => od.Product)
+                .GroupBy(od => od.Product.Name)
+                .Select(g => new
+                {
+                    ProductName = g.Key,
+                    TotalSold = g.Sum(x => x.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(3)
+                .ToList();
+
+            foreach (var p in topProducts)
+            {
+                Console.WriteLine($"Produkt: {p.ProductName}, Sålda enheter: {p.TotalSold}");
+            }
         }
 
+
+        //Total products in each category
+
+        public void GetProductsPerCategory()
+        {
+            using var context = new OnlineStoreContext();
+            var categoryCounts = context.Products
+                .Include(p => p.Category)
+                .GroupBy(p => p.Category.Name)
+                .Select(g => new
+                {
+                    CategoryName = g.Key,
+                    ProductCount = g.Count()
+                })
+                .ToList();
+
+            foreach (var c in categoryCounts)
+            {
+                Console.WriteLine($"Kategori: {c.CategoryName}, Antal produkter: {c.ProductCount}");
+            }
+        }
+
+        //Customers with orders over 1000 kr with customer and details
+
+        public void GetOrdersOver1000()
+        {
+            using var context = new OnlineStoreContext();
+            var orders = context.Orders
+                .Include(o => o.Customer)
+                .Include(o => o.OrderDetails)
+                    .ThenInclude(od => od.Product)
+                .Where(o => o.TotalAmount > 1000)
+                .ToList();
+
+            foreach (var o in orders)
+            {
+                Console.WriteLine($", Kund: {o.Customer.Name}\n" +
+                    $" Datum: {o.OrderDate}\n" +
+                    $", Total summa: {o.TotalAmount} kr");
+
+                foreach (var od in o.OrderDetails)
+                {
+                    Console.WriteLine($"\tProdukter: {od.Product.Name}, Antal: {od.Quantity}");
+                }
+            }
+        }
     }
 }
