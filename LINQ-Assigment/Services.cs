@@ -61,7 +61,6 @@ namespace LINQ_Assigment
             using var context = new OnlineStoreContext();
 
             var topProducts = context.OrderDetails
-                .Include(od => od.Product)
                 .GroupBy(od => od.Product.Name)
                 .Select(g => new
                 {
@@ -69,8 +68,7 @@ namespace LINQ_Assigment
                     TotalSold = g.Sum(x => x.Quantity)
                 })
                 .OrderByDescending(x => x.TotalSold)
-                .Take(3)
-                .ToList();
+                .Take(3);
 
             foreach (var p in topProducts)
             {
@@ -85,7 +83,6 @@ namespace LINQ_Assigment
         {
             using var context = new OnlineStoreContext();
             var categoryCounts = context.Products
-                .Include(p => p.Category)
                 .GroupBy(p => p.Category.Name)
                 .Select(g => new
                 {
@@ -101,26 +98,33 @@ namespace LINQ_Assigment
         }
 
         //Customers with orders over 1000 kr with customer and details
-
         public void GetOrdersOver1000()
         {
             using var context = new OnlineStoreContext();
             var orders = context.Orders
-                .Include(o => o.Customer)
-                .Include(o => o.OrderDetails)
-                    .ThenInclude(od => od.Product)
                 .Where(o => o.TotalAmount > 1000)
+                .Select(o => new
+                {
+                    o.Customer.Name,
+                    o.OrderDate,
+                    o.TotalAmount,
+                    OrderDetails = o.OrderDetails.Select(od => new
+                    {
+                        ProductName = od.Product.Name,
+                        od.Quantity
+                    }).ToList()
+                })
                 .ToList();
 
             foreach (var o in orders)
             {
-                Console.WriteLine($"Kund: {o.Customer.Name}\n" +
+                Console.WriteLine($"\nKund: {o.Name}\n" +
                     $" Datum: {o.OrderDate}\n" +
                     $"Total summa: {o.TotalAmount} kr");
 
                 foreach (var od in o.OrderDetails)
                 {
-                    Console.WriteLine($"\tProdukter: {od.Product.Name}, Antal: {od.Quantity}");
+                    Console.WriteLine($"\tProdukter: {od.ProductName}, Antal: {od.Quantity}");
                 }
             }
         }

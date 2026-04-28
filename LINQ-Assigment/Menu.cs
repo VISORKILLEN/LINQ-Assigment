@@ -13,7 +13,7 @@
 
             while (running)
             {
-                Console.WriteLine("\nVälj ett alternativ:");
+                Console.WriteLine("Välj ett alternativ:");
                 Console.WriteLine("1. Visa alla elektronikprodukter");
                 Console.WriteLine("2. Visa leverantörer med låg lagerstatus");
                 Console.WriteLine("3. Visa total försäljning för förra månaden");
@@ -54,7 +54,7 @@
                         break;
                 }
 
-                Console.WriteLine("\n Tryck på valfri tanget");
+                Console.WriteLine("\nTryck på valfri tanget");
                 Console.ReadKey();
                 Console.Clear();
 
